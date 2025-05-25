@@ -156,3 +156,32 @@ button:hover {
 .tile-slot:focus {
   outline: 2px solid #ffcc00;
 }
+
+.melds-wrapper {
+  display: flex;
+  gap: 60px; /* większy odstęp między zamkniętymi i otwartymi */
+  margin-bottom: 1rem;
+}
+
+.meld-side {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.meld-group {
+  display: flex;
+  gap: 5px;
+}
+
+.meld-group .tile-slot {
+  width: 40px;
+  height: 48px;
+  border: 1px dashed #a26eff;
+  border-radius: 4px;
+  background-color: #3d2563;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}

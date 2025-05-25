@@ -28,97 +28,110 @@ document.addEventListener("DOMContentLoaded", function () {
       tileDiv.appendChild(img);
       tilePicker.appendChild(tileDiv);
     });
-
+  
     function countTileUsage(tileCode) {
-        const selectors = ['#melds .tile-slot', '#doraIndicators .tile-slot', '#uradoraIndicators .tile-slot'];
-        let count = 0;
-      
-        selectors.forEach(selector => {
-          document.querySelectorAll(selector).forEach(slot => {
-            if (slot.dataset.tile === tileCode) count++;
-          });
+      const selectors = ['#closedMelds .tile-slot', '#openMelds .tile-slot', '#doraIndicators .tile-slot', '#uradoraIndicators .tile-slot'];
+      let count = 0;
+      selectors.forEach(selector => {
+        document.querySelectorAll(selector).forEach(slot => {
+          if (slot.dataset.tile === tileCode) count++;
         });
-      
-        return count;
-      }
-      
-function selectTile(tileCode) {
-  if (selectedSlot) {
-    const currentCount = countTileUsage(tileCode);
-    if (currentCount >= 4) {
-      console.warn(`Nie można użyć ${tileCode} więcej niż 4 razy`);
-      return;
+      });
+      console.log(`LICZĘ "${tileCode}":`, count);
+      return count;
     }
-
-    const file = tileMap[tileCode];
-    selectedSlot.innerHTML = `<img src="img/${file}" alt="${tileCode}">`;
-    selectedSlot.dataset.tile = tileCode;
-    logHandState();
-  }
-}
-
-
-    function logHandState() {
-        const tiles = Array.from(document.querySelectorAll("#melds .tile-slot")).map(slot =>
-          slot.dataset.tile || null
-        );
-        console.log("Aktualna ręka:", tiles);
+  
+    function selectTile(tileCode) {
+      if (selectedSlot) {
+        const currentCount = countTileUsage(tileCode);
+        if (currentCount >= 4) {
+          console.warn(`Nie można użyć ${tileCode} więcej niż 4 razy`);
+          return;
+        }
+        const file = tileMap[tileCode];
+        selectedSlot.innerHTML = `<img src="img/${file}" alt="${tileCode}">`;
+        selectedSlot.dataset.tile = tileCode;
+        logHandState();
       }
-      
+    }
+  
+    function logHandState() {
+      const tiles = Array.from(document.querySelectorAll("#closedMelds .tile-slot, #openMelds .tile-slot"))
+        .map(slot => slot.dataset.tile || null);
+      console.log("Aktualna ręka:", tiles);
+    }
   
     function selectWind(imgEl, type) {
       const groupId = type === 'seat' ? 'seatWindGroup' : 'roundWindGroup';
       const inputId = type === 'seat' ? 'seatWind' : 'roundWind';
-  
-      document.querySelectorAll(`#${groupId} img`).forEach(img => {
-        img.classList.remove("selected");
-      });
-  
+      document.querySelectorAll(`#${groupId} img`).forEach(img => img.classList.remove("selected"));
       imgEl.classList.add("selected");
       document.getElementById(inputId).value = imgEl.dataset.value;
     }
   
-    document.querySelectorAll(".tile-slot").forEach(slot => {
-      slot.setAttribute("tabindex", "0");
-      slot.addEventListener("click", () => (selectedSlot = slot));
-      slot.addEventListener("focus", () => (selectedSlot = slot));
+    function createInitialHandSlots(count = 14) {
+      const closed = document.getElementById("closedMelds");
+      for (let i = 0; i < count; i++) {
+        const slot = document.createElement("div");
+        slot.className = "tile-slot";
+        slot.setAttribute("tabindex", "0");
+        slot.addEventListener("click", () => (selectedSlot = slot));
+        slot.addEventListener("focus", () => (selectedSlot = slot));
+        closed.appendChild(slot);
+      }
+    }
+  
+    function wrapSlotsInGroup(slots) {
+      const group = document.createElement("div");
+      group.className = "meld-group";
+      const parent = slots[0].parentElement;
+      parent.insertBefore(group, slots[0]);
+      slots.forEach(slot => group.appendChild(slot));
+    }
+  
+    document.addEventListener("click", function (e) {
+      if (e.target.classList.contains("tile-slot") || e.target.closest(".tile-slot")) {
+        selectedSlot = e.target.closest(".tile-slot");
+      }
+    });
+  
+    document.addEventListener("focusin", function (e) {
+      if (e.target.classList.contains("tile-slot")) {
+        selectedSlot = e.target;
+      }
     });
   
     document.addEventListener("keydown", function (e) {
       const el = document.activeElement;
   
-      if (el.classList.contains("tile-slot")) {
-        selectedSlot = el;
-      }
-  
       if ((e.key === "Backspace" || e.key === "Delete") && selectedSlot) {
         e.preventDefault();
         selectedSlot.innerHTML = '';
         selectedSlot.dataset.tile = '';
+        logHandState();
         return;
       }
   
-      if (
-        (e.code === "Enter" || e.code === "Space") &&
-        el.tagName === "IMG" &&
-        (el.closest("#seatWindGroup") || el.closest("#roundWindGroup"))
-      ) {
+      if ((e.code === "Enter" || e.code === "Space") && el.tagName === "IMG" && (el.closest("#seatWindGroup") || el.closest("#roundWindGroup"))) {
         e.preventDefault();
         const type = el.closest("#seatWindGroup") ? "seat" : "round";
         selectWind(el, type);
         return;
       }
   
-      if (el.classList.contains("tile-slot") && (e.code === "Enter" || e.code === "Space")) {
+      if (e.code === "Space" && selectedSlot && selectedSlot.closest('.meld-group')) {
         e.preventDefault();
-        selectedSlot = el;
+        const group = selectedSlot.closest('.meld-group');
+        const inClosed = group.parentElement.id === "closedMelds";
+        const target = document.getElementById(inClosed ? "openMelds" : "closedMelds");
+        target.appendChild(group);
         return;
       }
   
       if (!selectedSlot) return;
       const key = e.key.toLowerCase();
   
-      if (['s', 't', 'p', 'q'].includes(key) && inputBuffer === '') {
+      if (["s", "t", "p", "q"].includes(key) && inputBuffer === '') {
         inputBuffer = key;
         clearTimeout(inputTimeout);
         inputTimeout = setTimeout(() => (inputBuffer = ''), 1000);
@@ -130,22 +143,15 @@ function selectTile(tileCode) {
         return;
       }
   
-      if (inputBuffer.length === 2 && ['m', 'p', 's', 'e', 'n', 'w', 'r', 'g'].includes(key)) {
-        const mode = inputBuffer[0]; // s, t, p, q
+      if (inputBuffer.length === 2 && ["m", "p", "s", "e", "n", "w", "r", "g"].includes(key)) {
+        const mode = inputBuffer[0];
         const code = inputBuffer[1] + key;
-  
         if (!tileMap[code]) {
           inputBuffer = '';
           return;
         }
   
-        const allSlots = Array.from(document.querySelectorAll("#melds .tile-slot"));
-        const startIndex = allSlots.indexOf(selectedSlot);
-        if (startIndex === -1) {
-          inputBuffer = '';
-          return;
-        }
-  
+        let tileCodes = [];
         if (mode === 's') {
           const num = parseInt(inputBuffer[1]);
           const suit = key;
@@ -153,80 +159,49 @@ function selectTile(tileCode) {
             inputBuffer = '';
             return;
           }
-  
-          const codes = [`${num}${suit}`, `${num + 1}${suit}`, `${num + 2}${suit}`];
-          for (let i = 0; i < 3; i++) {
-            const slot = allSlots[startIndex + i];
-            if (!slot) continue;
-            slot.innerHTML = `<img src="img/${tileMap[codes[i]]}" alt="${codes[i]}">`;
-            slot.dataset.tile = codes[i];
-          }
+          tileCodes = [`${num}${suit}`, `${num + 1}${suit}`, `${num + 2}${suit}`];
+        } else {
+          const count = mode === 't' ? 3 : mode === 'p' ? 2 : 4;
+          tileCodes = Array(count).fill(code);
         }
   
-        if (mode === 't') {
-          for (let i = 0; i < 3; i++) {
-            const slot = allSlots[startIndex + i];
-            if (!slot) continue;
-            if (countTileUsage(code) < 4) {
-                slot.innerHTML = `<img src="img/${tileMap[code]}" alt="${code}">`;
-                slot.dataset.tile = code;
-              } else {
-                console.warn(`${code} już użyto 4 razy – pominięto`);
-              }
-          }
+        console.log("tileCodes do sprawdzenia:", tileCodes);
+  
+        const usageCheck = {};
+        let blocked = false;
+        for (const tile of tileCodes) {
+          const current = countTileUsage(tile);
+          usageCheck[tile] = current;
+          if (current >= 4) blocked = true;
+        }
+        console.log("Użycie tile'i:", usageCheck);
+  
+        if (blocked) {
+          console.warn("Zablokowano meld z powodu przekroczenia limitu.");
+          inputBuffer = '';
+          return;
         }
   
-        if (mode === 'p') {
-          for (let i = 0; i < 2; i++) {
-            const slot = allSlots[startIndex + i];
-            if (!slot) continue;
-            if (countTileUsage(code) < 4) {
-                slot.innerHTML = `<img src="img/${tileMap[code]}" alt="${code}">`;
-                slot.dataset.tile = code;
-              } else {
-                console.warn(`${code} już użyto 4 razy – pominięto`);
-              }
-          }
+        const allSlots = Array.from(document.querySelectorAll("#closedMelds .tile-slot"));
+        const startIndex = allSlots.indexOf(selectedSlot);
+        if (startIndex === -1) {
+          inputBuffer = '';
+          return;
         }
   
-        if (mode === 'q') {
-            const currentCount = countTileUsage(code);
-            if (currentCount + 4 > 4) {
-              console.warn(`Nie można dodać quada ${code} — limit 4 sztuk`);
-              inputBuffer = '';
-              return;
-            }
-          
-            for (let i = 0; i < 3; i++) {
-              const slot = allSlots[startIndex + i];
-              if (!slot) continue;
-              slot.innerHTML = `<img src="img/${tileMap[code]}" alt="${code}">`;
-              slot.dataset.tile = code;
-            }
-          
-            // dodajemy CZWARTY slot zawsze
-            const newSlot = document.createElement("div");
-            newSlot.className = "tile-slot";
-            newSlot.setAttribute("tabindex", "0");
-            newSlot.addEventListener("click", () => (selectedSlot = newSlot));
-            newSlot.addEventListener("focus", () => (selectedSlot = newSlot));
-            newSlot.innerHTML = `<img src="img/${tileMap[code]}" alt="${code}">`;
-            newSlot.dataset.tile = code;
-          
-            const third = allSlots[startIndex + 2];
-            if (third && third.parentElement) {
-              third.parentElement.insertBefore(newSlot, third.nextSibling);
-            } else {
-              document.getElementById("melds").appendChild(newSlot);
-            }
-          
-            logHandState();
-            inputBuffer = '';
-            return;
-          }
-          
-          
-          logHandState();
+        const usedSlots = [];
+        for (let i = 0; i < tileCodes.length; i++) {
+          const slot = allSlots[startIndex + i];
+          if (!slot) continue;
+          slot.innerHTML = `<img src="img/${tileMap[tileCodes[i]]}" alt="${tileCodes[i]}">`;
+          slot.dataset.tile = tileCodes[i];
+          usedSlots.push(slot);
+        }
+  
+        if (mode !== 'p') {
+          wrapSlotsInGroup(usedSlots);
+        }
+        logHandState();
         inputBuffer = '';
         return;
       }
@@ -246,6 +221,7 @@ function selectTile(tileCode) {
       }
     });
   
+    createInitialHandSlots();
     window.selectWind = selectWind;
   });
   
