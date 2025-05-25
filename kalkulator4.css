@@ -1,0 +1,139 @@
+/* styles.css – fioletowy dark mode */
+
+body {
+  background-color: #1b1123;
+  color: #ffffff;
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #cfa3ff;
+}
+
+form {
+  display: grid;
+  gap: 1rem;
+  background-color: #2e1b47;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+label {
+  font-weight: bold;
+  color: #e3d4ff;
+}
+
+input[type="text"],
+textarea,
+select {
+  background-color: #3d2563;
+  color: #ffffff;
+  border: 1px solid #a26eff;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+input[type="checkbox"] {
+  transform: scale(1.2);
+  margin-right: 8px;
+  accent-color: #a26eff;
+}
+
+button {
+  background-color: #a26eff;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background-color: #cfa3ff;
+}
+
+#result {
+  margin-top: 20px;
+  background-color: #3d2563;
+  padding: 15px;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  text-align: center;
+  color: #ffffff;
+}
+
+/* Styl wyboru kostek */
+.tile-picker {
+  display: grid;
+  grid-template-columns: repeat(9, 40px);
+  gap: 6px;
+  background-color: #2e1b47;
+  padding: 10px;
+  border-radius: 8px;
+  position: absolute;
+  z-index: 1000;
+  box-shadow: 0 0 10px #a26eff;
+}
+
+.tile {
+  width: 36px;
+  height: 48px;
+  background-color: #ffffff;
+  color: #000;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.tile:hover {
+  transform: scale(1.1);
+  background-color: #eee;
+}
+
+/* Styl meldów */
+.meld-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.tile-slot {
+  width: 40px;
+  height: 48px;
+  border: 1px dashed #a26eff;
+  border-radius: 4px;
+  background-color: #3d2563;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.tile-slot img {
+  max-width: 100%;
+  height: auto;
+}

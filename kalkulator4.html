@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mahjong Riichi Scorer</title>
+  <link rel="stylesheet" href="kalkulator4.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Mahjong Riichi Scorer</h1>
+
+    <form id="scoreForm">
+      <!-- Wiatry -->
+      <div class="form-group">
+        <label for="seatWind">Seat Wind</label>
+        <select id="seatWind">
+          <option value="east">East</option>
+          <option value="south">South</option>
+          <option value="west">West</option>
+          <option value="north">North</option>
+        </select>
+
+        <label for="roundWind">Round Wind</label>
+        <select id="roundWind">
+          <option value="east">East</option>
+          <option value="south">South</option>
+          <option value="west">West</option>
+          <option value="north">North</option>
+        </select>
+      </div>
+
+      <!-- Dora / Uradora -->
+      <div class="form-group">
+        <label>Dora Indicators</label>
+        <div id="doraIndicators" class="meld-row"></div>
+        <button type="button" onclick="addIndicator('dora')">+ Dora</button>
+
+        <label>Uradora Indicators</label>
+        <div id="uradoraIndicators" class="meld-row"></div>
+        <button type="button" onclick="addIndicator('uradora')">+ Uradora</button>
+      </div>
+
+      <!-- Meldy -->
+      <div class="form-group">
+        <label>Melds & Pair</label>
+        <div class="meld-row" id="melds">
+          <div class="meld">
+            <label>Closed</label><input type="checkbox" class="closed-toggle" />
+            <div class="tile-slot" onclick="openTilePicker(this)"></div>
+            <div class="tile-slot" onclick="openTilePicker(this)"></div>
+            <div class="tile-slot" onclick="openTilePicker(this)"></div>
+          </div>
+          <div class="meld">
+            <label>Closed</label><input type="checkbox" class="closed-toggle" />
+            <div class="tile-slot" onclick="openTilePicker(this)"></div>
+            <div class="tile-slot" onclick="openTilePicker(this)"></div>
+            <div class="tile-slot" onclick="openTilePicker(this)"></div>
+          </div>
+          <div class="meld">
+            <label>Closed</label><input type="checkbox" class="closed-toggle" />
+            <div class="tile-slot" onclick="openTilePicker(this)"></div>
+            <div class="tile-slot" onclick="openTilePicker(this)"></div>
+            <div class="tile-slot" onclick="openTilePicker(this)"></div>
+          </div>
+          <div class="meld">
+            <label>Closed</label><input type="checkbox" class="closed-toggle" />
+            <div class="tile-slot" onclick="openTilePicker(this)"></div>
+            <div class="tile-slot" onclick="openTilePicker(this)"></div>
+            <div class="tile-slot" onclick="openTilePicker(this)"></div>
+          </div>
+          <div class="meld">
+            <label>Pair</label>
+            <div class="tile-slot" onclick="openTilePicker(this)"></div>
+            <div class="tile-slot" onclick="openTilePicker(this)"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Opcje specjalne -->
+      <div class="form-group">
+        <label>Win Method</label>
+        <label><input type="checkbox" id="tsumo" /> Tsumo</label>
+        <label><input type="checkbox" id="ron" /> Ron</label>
+
+        <label>Riichi</label>
+        <label><input type="checkbox" id="riichi" /> Riichi</label>
+        <label><input type="checkbox" id="doubleRiichi" /> Double Riichi</label>
+        <label><input type="checkbox" id="ippatsu" /> Ippatsu</label>
+      </div>
+
+      <!-- Oblicz wynik -->
+      <button type="submit">Calculate Score</button>
+    </form>
+
+    <!-- Wynik -->
+    <div id="result">Result will appear here...</div>
+
+    <!-- Picker płytek -->
+    <div id="tilePicker" class="tile-picker" style="display: none;"></div>
+  </div>
+
+  <script src="kalkulator4.js"></script>
+</body>
+</html>
