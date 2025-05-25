@@ -10,70 +10,57 @@
   <div class="container">
     <h1>Mahjong Riichi Scorer</h1>
 
+    <!-- Picker płytek -->
+    <div id="tilePicker" class="tile-picker"></div>
+
     <form id="scoreForm">
       <!-- Wiatry -->
       <div class="form-group">
-        <label for="seatWind">Seat Wind</label>
-        <select id="seatWind">
-          <option value="east">East</option>
-          <option value="south">South</option>
-          <option value="west">West</option>
-          <option value="north">North</option>
-        </select>
+        <label>Seat Wind</label>
+        <div class="wind-choice" id="seatWindGroup">
+          <img src="img/Ton.svg" alt="east" data-value="east" onclick="selectWind(this, 'seat')" class="selected" tabindex="1"/>
+          <img src="img/Nan.svg" alt="south" data-value="south" onclick="selectWind(this, 'seat')" tabindex="2" />
+          <img src="img/Shaa.svg" alt="west" data-value="west" onclick="selectWind(this, 'seat')" tabindex="3" />
+          <img src="img/Pei.svg" alt="north" data-value="north" onclick="selectWind(this, 'seat')" tabindex="4" />
+        </div>
 
-        <label for="roundWind">Round Wind</label>
-        <select id="roundWind">
-          <option value="east">East</option>
-          <option value="south">South</option>
-          <option value="west">West</option>
-          <option value="north">North</option>
-        </select>
+        <label>Round Wind</label>
+        <div class="wind-choice" id="roundWindGroup">
+          <img src="img/Ton.svg" alt="east" data-value="east" onclick="selectWind(this, 'round')" class="selected" tabindex="5" />
+          <img src="img/Nan.svg" alt="south" data-value="south" onclick="selectWind(this, 'round')" tabindex="6" />
+          <img src="img/Shaa.svg" alt="west" data-value="west" onclick="selectWind(this, 'round')" tabindex="7" />
+          <img src="img/Pei.svg" alt="north" data-value="north" onclick="selectWind(this, 'round')" tabindex="8" />
+        </div>
       </div>
+
+      <input type="hidden" id="seatWind" name="seatWind" value="east" />
+      <input type="hidden" id="roundWind" name="roundWind" value="east" />
 
       <!-- Dora / Uradora -->
-      <div class="form-group">
-        <label>Dora Indicators</label>
-        <div id="doraIndicators" class="meld-row"></div>
-        <button type="button" onclick="addIndicator('dora')">+ Dora</button>
-
-        <label>Uradora Indicators</label>
-        <div id="uradoraIndicators" class="meld-row"></div>
-        <button type="button" onclick="addIndicator('uradora')">+ Uradora</button>
+      <label>Dora Indicators</label>
+      <div id="doraIndicators" class="meld-row">
+        <div class="tile-slot" tabindex="9"></div>
+        <div class="tile-slot" tabindex="10"></div>
+        <div class="tile-slot" tabindex="11"></div>
+        <div class="tile-slot" tabindex="12"></div>
+        <div class="tile-slot" tabindex="13"></div>
       </div>
 
-      <!-- Meldy -->
+      <label>Uradora Indicators</label>
+      <div id="uradoraIndicators" class="meld-row">
+        <div class="tile-slot" tabindex="14"></div>
+        <div class="tile-slot" tabindex="15"></div>
+        <div class="tile-slot" tabindex="16"></div>
+        <div class="tile-slot" tabindex="17"></div>
+        <div class="tile-slot" tabindex="18"></div>
+      </div>
+
+      <!-- Hand Tiles: Closed vs Open -->
       <div class="form-group">
-        <label>Melds & Pair</label>
-        <div class="meld-row" id="melds">
-          <div class="meld">
-            <label>Closed</label><input type="checkbox" class="closed-toggle" />
-            <div class="tile-slot" onclick="openTilePicker(this)"></div>
-            <div class="tile-slot" onclick="openTilePicker(this)"></div>
-            <div class="tile-slot" onclick="openTilePicker(this)"></div>
-          </div>
-          <div class="meld">
-            <label>Closed</label><input type="checkbox" class="closed-toggle" />
-            <div class="tile-slot" onclick="openTilePicker(this)"></div>
-            <div class="tile-slot" onclick="openTilePicker(this)"></div>
-            <div class="tile-slot" onclick="openTilePicker(this)"></div>
-          </div>
-          <div class="meld">
-            <label>Closed</label><input type="checkbox" class="closed-toggle" />
-            <div class="tile-slot" onclick="openTilePicker(this)"></div>
-            <div class="tile-slot" onclick="openTilePicker(this)"></div>
-            <div class="tile-slot" onclick="openTilePicker(this)"></div>
-          </div>
-          <div class="meld">
-            <label>Closed</label><input type="checkbox" class="closed-toggle" />
-            <div class="tile-slot" onclick="openTilePicker(this)"></div>
-            <div class="tile-slot" onclick="openTilePicker(this)"></div>
-            <div class="tile-slot" onclick="openTilePicker(this)"></div>
-          </div>
-          <div class="meld">
-            <label>Pair</label>
-            <div class="tile-slot" onclick="openTilePicker(this)"></div>
-            <div class="tile-slot" onclick="openTilePicker(this)"></div>
-          </div>
+        <label>Hand Tiles</label>
+        <div class="melds-wrapper">
+          <div id="closedMelds" class="meld-side"></div>
+          <div id="openMelds" class="meld-side open"></div>
         </div>
       </div>
 
@@ -89,15 +76,10 @@
         <label><input type="checkbox" id="ippatsu" /> Ippatsu</label>
       </div>
 
-      <!-- Oblicz wynik -->
       <button type="submit">Calculate Score</button>
     </form>
 
-    <!-- Wynik -->
     <div id="result">Result will appear here...</div>
-
-    <!-- Picker płytek -->
-    <div id="tilePicker" class="tile-picker" style="display: none;"></div>
   </div>
 
   <script src="kalkulator4.js"></script>
