@@ -28,14 +28,35 @@ document.addEventListener("DOMContentLoaded", function () {
       tileDiv.appendChild(img);
       tilePicker.appendChild(tileDiv);
     });
-  
-    function selectTile(tileCode) {
-      if (selectedSlot) {
-        const file = tileMap[tileCode];
-        selectedSlot.innerHTML = `<img src="img/${file}" alt="${tileCode}">`;
-        selectedSlot.dataset.tile = tileCode;
+
+    function countTileUsage(tileCode) {
+        const selectors = ['#melds .tile-slot', '#doraIndicators .tile-slot', '#uradoraIndicators .tile-slot'];
+        let count = 0;
+      
+        selectors.forEach(selector => {
+          document.querySelectorAll(selector).forEach(slot => {
+            if (slot.dataset.tile === tileCode) count++;
+          });
+        });
+      
+        return count;
       }
+      
+function selectTile(tileCode) {
+  if (selectedSlot) {
+    const currentCount = countTileUsage(tileCode);
+    if (currentCount >= 4) {
+      console.warn(`Nie można użyć ${tileCode} więcej niż 4 razy`);
+      return;
     }
+
+    const file = tileMap[tileCode];
+    selectedSlot.innerHTML = `<img src="img/${file}" alt="${tileCode}">`;
+    selectedSlot.dataset.tile = tileCode;
+    logHandState();
+  }
+}
+
 
     function logHandState() {
         const tiles = Array.from(document.querySelectorAll("#melds .tile-slot")).map(slot =>
@@ -146,8 +167,12 @@ document.addEventListener("DOMContentLoaded", function () {
           for (let i = 0; i < 3; i++) {
             const slot = allSlots[startIndex + i];
             if (!slot) continue;
-            slot.innerHTML = `<img src="img/${tileMap[code]}" alt="${code}">`;
-            slot.dataset.tile = code;
+            if (countTileUsage(code) < 4) {
+                slot.innerHTML = `<img src="img/${tileMap[code]}" alt="${code}">`;
+                slot.dataset.tile = code;
+              } else {
+                console.warn(`${code} już użyto 4 razy – pominięto`);
+              }
           }
         }
   
@@ -155,8 +180,12 @@ document.addEventListener("DOMContentLoaded", function () {
           for (let i = 0; i < 2; i++) {
             const slot = allSlots[startIndex + i];
             if (!slot) continue;
-            slot.innerHTML = `<img src="img/${tileMap[code]}" alt="${code}">`;
-            slot.dataset.tile = code;
+            if (countTileUsage(code) < 4) {
+                slot.innerHTML = `<img src="img/${tileMap[code]}" alt="${code}">`;
+                slot.dataset.tile = code;
+              } else {
+                console.warn(`${code} już użyto 4 razy – pominięto`);
+              }
           }
         }
   
@@ -164,8 +193,12 @@ document.addEventListener("DOMContentLoaded", function () {
             for (let i = 0; i < 3; i++) {
               const slot = allSlots[startIndex + i];
               if (!slot) continue;
-              slot.innerHTML = `<img src="img/${tileMap[code]}" alt="${code}">`;
-              slot.dataset.tile = code;
+              if (countTileUsage(code) < 4) {
+                slot.innerHTML = `<img src="img/${tileMap[code]}" alt="${code}">`;
+                slot.dataset.tile = code;
+              } else {
+                console.warn(`${code} już użyto 4 razy – pominięto`);
+              }
             }
           
             // Zawsze dodaj nowy slot jako 4. element quada
