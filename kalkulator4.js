@@ -126,11 +126,15 @@ document.addEventListener("DOMContentLoaded", function () {
       }
   
       if (e.code === "Space" && selectedSlot && selectedSlot.closest('.meld-group')) {
-        e.preventDefault();
         const group = selectedSlot.closest('.meld-group');
-        const inClosed = group.parentElement.id === "closedMelds";
-        const target = document.getElementById(inClosed ? "openMelds" : "closedMelds");
-        target.appendChild(group);
+        if (!group.closest('#doraIndicators') && !group.closest('#uradoraIndicators')) {
+          e.preventDefault();
+          const inClosed = group.parentElement.id === "closedMelds";
+          const target = document.getElementById(inClosed ? "openMelds" : "closedMelds");
+          target.appendChild(group);
+          if (!inClosed) group.classList.add("open");
+          else group.classList.remove("open");
+        }
         return;
       }
   
@@ -167,7 +171,7 @@ document.addEventListener("DOMContentLoaded", function () {
           }
           tileCodes = [`${num}${suit}`, `${num + 1}${suit}`, `${num + 2}${suit}`];
         } else if (mode === 'q') {
-          tileCodes = [code, code, code]; // tylko 3 do slotów
+          tileCodes = [code, code, code, code];
         } else {
           const count = mode === 't' ? 3 : mode === 'p' ? 2 : 4;
           tileCodes = Array(count).fill(code);
@@ -177,10 +181,15 @@ document.addEventListener("DOMContentLoaded", function () {
   
         const usageCheck = {};
         let blocked = false;
+        const tileCountMap = {};
         for (const tile of tileCodes) {
+          tileCountMap[tile] = (tileCountMap[tile] || 0) + 1;
+        }
+  
+        for (const [tile, toAdd] of Object.entries(tileCountMap)) {
           const current = countTileUsage(tile);
-          usageCheck[tile] = current;
-          if (current >= 4) blocked = true;
+          usageCheck[tile] = `${current} + ${toAdd} = ${current + toAdd}`;
+          if (current + toAdd > 4) blocked = true;
         }
         console.log("Użycie tile'i:", usageCheck);
   
@@ -198,7 +207,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
   
         const usedSlots = [];
-        for (let i = 0; i < tileCodes.length; i++) {
+        for (let i = 0; i < (mode === 'q' ? 3 : tileCodes.length); i++) {
           const slot = allSlots[startIndex + i];
           if (!slot) continue;
           slot.innerHTML = `<img src="img/${tileMap[tileCodes[i]]}" alt="${tileCodes[i]}">`;
@@ -217,7 +226,7 @@ document.addEventListener("DOMContentLoaded", function () {
           usedSlots.push(newSlot);
         }
   
-        if (mode !== 'p') {
+        if (mode !== 'p' && !selectedSlot.closest('#doraIndicators') && !selectedSlot.closest('#uradoraIndicators')) {
           wrapSlotsInGroup(usedSlots);
         }
         logHandState();
