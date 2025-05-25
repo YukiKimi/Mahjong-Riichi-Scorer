@@ -190,7 +190,7 @@ document.addEventListener("DOMContentLoaded", function () {
           return;
         }
   
-        const allSlots = Array.from(document.querySelectorAll("#closedMelds .tile-slot"));
+        const allSlots = Array.from(document.querySelectorAll(".tile-slot"));
         const startIndex = allSlots.indexOf(selectedSlot);
         if (startIndex === -1) {
           inputBuffer = '';
