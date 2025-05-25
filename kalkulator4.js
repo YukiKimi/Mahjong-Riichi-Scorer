@@ -106,8 +106,14 @@ document.addEventListener("DOMContentLoaded", function () {
   
       if ((e.key === "Backspace" || e.key === "Delete") && selectedSlot) {
         e.preventDefault();
-        selectedSlot.innerHTML = '';
-        selectedSlot.dataset.tile = '';
+        const group = selectedSlot.closest('.meld-group');
+        if (group && group.children.length === 4) {
+          group.removeChild(selectedSlot);
+          if (group.children.length === 0) group.remove();
+        } else {
+          selectedSlot.innerHTML = '';
+          selectedSlot.dataset.tile = '';
+        }
         logHandState();
         return;
       }
@@ -160,6 +166,8 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
           }
           tileCodes = [`${num}${suit}`, `${num + 1}${suit}`, `${num + 2}${suit}`];
+        } else if (mode === 'q') {
+          tileCodes = [code, code, code]; // tylko 3 do slotów
         } else {
           const count = mode === 't' ? 3 : mode === 'p' ? 2 : 4;
           tileCodes = Array(count).fill(code);
@@ -196,6 +204,17 @@ document.addEventListener("DOMContentLoaded", function () {
           slot.innerHTML = `<img src="img/${tileMap[tileCodes[i]]}" alt="${tileCodes[i]}">`;
           slot.dataset.tile = tileCodes[i];
           usedSlots.push(slot);
+        }
+  
+        if (mode === 'q') {
+          const newSlot = document.createElement("div");
+          newSlot.className = "tile-slot";
+          newSlot.setAttribute("tabindex", "0");
+          newSlot.innerHTML = `<img src="img/${tileMap[code]}" alt="${code}">`;
+          newSlot.dataset.tile = code;
+          newSlot.addEventListener("click", () => (selectedSlot = newSlot));
+          newSlot.addEventListener("focus", () => (selectedSlot = newSlot));
+          usedSlots.push(newSlot);
         }
   
         if (mode !== 'p') {
