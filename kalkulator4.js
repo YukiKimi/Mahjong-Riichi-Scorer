@@ -190,18 +190,21 @@ function selectTile(tileCode) {
         }
   
         if (mode === 'q') {
+            const currentCount = countTileUsage(code);
+            if (currentCount + 4 > 4) {
+              console.warn(`Nie można dodać quada ${code} — limit 4 sztuk`);
+              inputBuffer = '';
+              return;
+            }
+          
             for (let i = 0; i < 3; i++) {
               const slot = allSlots[startIndex + i];
               if (!slot) continue;
-              if (countTileUsage(code) < 4) {
-                slot.innerHTML = `<img src="img/${tileMap[code]}" alt="${code}">`;
-                slot.dataset.tile = code;
-              } else {
-                console.warn(`${code} już użyto 4 razy – pominięto`);
-              }
+              slot.innerHTML = `<img src="img/${tileMap[code]}" alt="${code}">`;
+              slot.dataset.tile = code;
             }
           
-            // Zawsze dodaj nowy slot jako 4. element quada
+            // dodajemy CZWARTY slot zawsze
             const newSlot = document.createElement("div");
             newSlot.className = "tile-slot";
             newSlot.setAttribute("tabindex", "0");
@@ -216,6 +219,10 @@ function selectTile(tileCode) {
             } else {
               document.getElementById("melds").appendChild(newSlot);
             }
+          
+            logHandState();
+            inputBuffer = '';
+            return;
           }
           
           
